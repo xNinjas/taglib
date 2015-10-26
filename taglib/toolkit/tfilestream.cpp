@@ -27,13 +27,6 @@
 #include "tstring.h"
 #include "tdebug.h"
 
-#ifdef _WIN32
-# include <windows.h>
-#else
-# include <stdio.h>
-# include <unistd.h>
-#endif
-
 using namespace TagLib;
 
 namespace
@@ -89,8 +82,6 @@ namespace
     FileNameHandle(FileName name) : std::string(name) {}
     operator FileName () const { return c_str(); }
   };
-
-  typedef FILE* FileHandle;
 
   const FileHandle InvalidFileHandle = 0;
 

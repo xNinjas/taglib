@@ -31,6 +31,14 @@
 #include "tbytevector.h"
 #include "tiostream.h"
 
+#ifdef _WIN32
+# include <windows.h>
+#else
+# include <stdio.h>
+# include <unistd.h>
+typedef FILE* FileHandle;
+#endif
+
 namespace TagLib {
 
   class String;
