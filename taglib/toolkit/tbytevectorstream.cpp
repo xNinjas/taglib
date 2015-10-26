@@ -78,7 +78,7 @@ ByteVector ByteVectorStream::readBlock(ulong length)
   return v;
 }
 
-void ByteVectorStream::writeBlock(const ByteVector &data)
+bool ByteVectorStream::writeBlock(const ByteVector &data)
 {
   uint size = data.size();
   if(long(d->position + size) > length()) {
@@ -86,9 +86,11 @@ void ByteVectorStream::writeBlock(const ByteVector &data)
   }
   memcpy(d->data.data() + d->position, data.data(), size);
   d->position += size;
+  
+  return true;
 }
 
-void ByteVectorStream::insert(const ByteVector &data, ulong start, ulong replace)
+bool ByteVectorStream::insert(const ByteVector &data, ulong start, ulong replace)
 {
   long sizeDiff = data.size() - replace;
   if(sizeDiff < 0) {
@@ -101,10 +103,10 @@ void ByteVectorStream::insert(const ByteVector &data, ulong start, ulong replace
     memmove(d->data.data() + writePosition, d->data.data() + readPosition, length() - sizeDiff - readPosition);
   }
   seek(start);
-  writeBlock(data);
+  return writeBlock(data);
 }
 
-void ByteVectorStream::removeBlock(ulong start, ulong length)
+bool ByteVectorStream::removeBlock(ulong start, ulong length)
 {
   ulong readPosition = start + length;
   ulong writePosition = start;
@@ -115,6 +117,8 @@ void ByteVectorStream::removeBlock(ulong start, ulong length)
   }
   d->position = writePosition;
   truncate(writePosition);
+  
+  return true;
 }
 
 bool ByteVectorStream::readOnly() const

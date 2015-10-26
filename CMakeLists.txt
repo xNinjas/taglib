@@ -106,6 +106,8 @@ if(WITH_MP4)
   set(TAGLIB_WITH_MP4 TRUE)
 endif()
 
+option(COMPILE_FOR_ANDROID "Output to logcat console on android"  OFF)
+
 option(TRACE_IN_RELEASE "Output debug messages even in release mode"  OFF)
 if(TRACE_IN_RELEASE)
   set(TRACE_IN_RELEASE TRUE)

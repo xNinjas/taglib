@@ -24,6 +24,7 @@
  ***************************************************************************/
 
 #include "tdebuglistener.h"
+#include "config.h"
 
 #include <iostream>
 #include <bitset>
@@ -31,6 +32,11 @@
 #ifdef _WIN32
 # include <windows.h>
 #endif
+
+#ifdef COMPILE_FOR_ANDROID
+# include <android/log.h>
+#endif
+
 
 using namespace TagLib;
 
@@ -51,9 +57,13 @@ namespace
 
         std::cerr << std::string(&buf[0]);
       }
-
+#endif 
+#ifdef COMPILE_FOR_ANDROID
+	  __android_log_print(ANDROID_LOG_INFO, "Taglib", "%s", msg.toCString());
+	  
+      std::cerr << msg;
 #else
-
+	
       std::cerr << msg;
 
 #endif 

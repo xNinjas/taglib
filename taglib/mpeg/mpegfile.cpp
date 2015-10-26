@@ -111,6 +111,14 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
+MPEG::File::File(IOStream *stream, bool readProperties, Properties::ReadStyle) :
+  TagLib::File(stream),
+  d(new FilePrivate())
+{	
+  if(isOpen())
+    read(readProperties);
+}
+
 MPEG::File::File(FileName file, bool readProperties, Properties::ReadStyle) :
   TagLib::File(file),
   d(new FilePrivate())

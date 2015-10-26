@@ -44,7 +44,6 @@ namespace TagLib
   void debug(const String &s)
   {
 #if !defined(NDEBUG) || defined(TRACE_IN_RELEASE)
-
     debugListener->printMessage("TagLib: " + s + "\n");
 
 #endif

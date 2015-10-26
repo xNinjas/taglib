@@ -70,6 +70,18 @@ namespace TagLib {
         AllTags = 0xffff
       };
 
+	   /*!
+       * Constructs an MPEG file from \a IOStream.  If \a readProperties is true the
+       * file's audio properties will also be read.
+       *
+       * \note In the current implementation, \a propertiesStyle is ignored.
+       *
+       * \deprecated This constructor will be dropped in favor of the one below
+       * in a future version.
+       */
+      File(IOStream *stream, bool readProperties = true,
+           Properties::ReadStyle propertiesStyle = Properties::Average); 
+		   
       /*!
        * Constructs an MPEG file from \a file.  If \a readProperties is true the
        * file's audio properties will also be read.

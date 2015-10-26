@@ -25,4 +25,7 @@
 /* Indicates whether debug messages are shown even in release mode */
 #cmakedefine   TRACE_IN_RELEASE 1
 
+/* Defined if you are building for android */
+#cmakedefine   COMPILE_FOR_ANDROID 1
+
 #cmakedefine TESTS_DIR "@TESTS_DIR@"

@@ -48,6 +48,11 @@ namespace TagLib {
   class TAGLIB_EXPORT FileStream : public IOStream
   {
   public:
+	/*!
+     * Construct a File object based on an already opened file handle.
+     */
+    FileStream(FILE* fd);
+	
     /*!
      * Construct a File object and opens the \a file.  \a file should be a
      * be a C-string in the local file system encoding.
@@ -77,8 +82,11 @@ namespace TagLib {
      * \note This should be used instead of using the streaming output operator
      * for a ByteVector.  And even this function is significantly slower than
      * doing output with a char[].
+	 *
+	 * Return true if it succeed, false otherwise.
      */
-    void writeBlock(const ByteVector &data);
+	 
+    bool writeBlock(const ByteVector &data);
 
     /*!
      * Insert \a data at position \a start in the file overwriting \a replace
@@ -87,7 +95,7 @@ namespace TagLib {
      * \note This method is slow since it requires rewriting all of the file
      * after the insertion point.
      */
-    void insert(const ByteVector &data, ulong start = 0, ulong replace = 0);
+    bool insert(const ByteVector &data, ulong start = 0, ulong replace = 0);
 
     /*!
      * Removes a block of the file starting a \a start and continuing for
@@ -96,7 +104,7 @@ namespace TagLib {
      * \note This method is slow since it involves rewriting all of the file
      * after the removed portion.
      */
-    void removeBlock(ulong start = 0, ulong length = 0);
+    bool removeBlock(ulong start = 0, ulong length = 0);
 
     /*!
      * Returns true if the file is read only (or if the file can not be opened).

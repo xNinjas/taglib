@@ -99,8 +99,10 @@ namespace TagLib {
      * \note This should be used instead of using the streaming output operator
      * for a ByteVector.  And even this function is significantly slower than
      * doing output with a char[].
+	 *
+	 * Return true if it succeed, false otherwise.
      */
-    virtual void writeBlock(const ByteVector &data) = 0;
+    virtual bool writeBlock(const ByteVector &data) = 0;
 
     /*!
      * Insert \a data at position \a start in the file overwriting \a replace
@@ -108,8 +110,11 @@ namespace TagLib {
      *
      * \note This method is slow since it requires rewriting all of the file
      * after the insertion point.
-     */
-    virtual void insert(const ByteVector &data, ulong start = 0, ulong replace = 0) = 0;
+     *
+	 * Return true if it succeed, false otherwise.
+	 */
+	 
+    virtual bool insert(const ByteVector &data, ulong start = 0, ulong replace = 0) = 0;
 
     /*!
      * Removes a block of the file starting a \a start and continuing for
@@ -117,8 +122,10 @@ namespace TagLib {
      *
      * \note This method is slow since it involves rewriting all of the file
      * after the removed portion.
+	 *
+	 * Return true if it succeed, false otherwise.
      */
-    virtual void removeBlock(ulong start = 0, ulong length = 0) = 0;
+    virtual bool removeBlock(ulong start = 0, ulong length = 0) = 0;
 
     /*!
      * Returns true if the file is read only (or if the file can not be opened).

@@ -136,6 +136,16 @@ public:
 // public members
 ////////////////////////////////////////////////////////////////////////////////
 
+FileStream::FileStream(FILE* fd)
+  : d(new FileStreamPrivate(""))
+{
+	d->file = fd;
+	
+	if (fd != InvalidFileHandle) {
+		d->readOnly = false;
+	}	
+}
+
 FileStream::FileStream(FileName fileName, bool openReadOnly)
   : d(new FileStreamPrivate(fileName))
 {
@@ -194,43 +204,50 @@ ByteVector FileStream::readBlock(ulong length)
   return buffer;
 }
 
-void FileStream::writeBlock(const ByteVector &data)
+bool FileStream::writeBlock(const ByteVector &data)
 {
   if(!isOpen()) {
     debug("FileStream::writeBlock() -- invalid file.");
-    return;
+    return false;
   }
 
   if(readOnly()) {
     debug("FileStream::writeBlock() -- read only file.");
-    return;
+    return false;
   }
 
-  writeFile(d->file, data);
+  size_t nbBytes = writeFile(d->file, data);
+  
+  if (nbBytes != data.size()) {
+	  debug("FileStream::writeBlock() error, 0 bytes written.");
+	  return false;
+  }
+  
+  return true;
 }
 
-void FileStream::insert(const ByteVector &data, ulong start, ulong replace)
+bool FileStream::insert(const ByteVector &data, ulong start, ulong replace)
 {
   if(!isOpen()) {
     debug("FileStream::insert() -- invalid file.");
-    return;
+    return false;
   }
 
   if(readOnly()) {
     debug("FileStream::insert() -- read only file.");
-    return;
+    return false;
   }
 
   if(data.size() == replace) {
     seek(start);
-    writeBlock(data);
-    return;
+    return writeBlock(data);    
   }
   else if(data.size() < replace) {
     seek(start);
-    writeBlock(data);
-    removeBlock(start + data.size(), replace - data.size());
-    return;
+    if (!writeBlock(data)) {
+		return false;
+	}
+    return removeBlock(start + data.size(), replace - data.size());    
   }
 
   // Woohoo!  Faster (about 20%) than id3lib at last.  I had to get hardcore
@@ -276,7 +293,10 @@ void FileStream::insert(const ByteVector &data, ulong start, ulong replace)
     // writePosition.
 
     seek(writePosition);
-    writeBlock(buffer);
+	
+    if (!writeBlock(buffer)) {
+		return false;
+	}
 
     // We hit the end of the file.
 
@@ -289,13 +309,15 @@ void FileStream::insert(const ByteVector &data, ulong start, ulong replace)
 
     buffer = aboutToOverwrite;
   }
+  
+  return true;
 }
 
-void FileStream::removeBlock(ulong start, ulong length)
+bool FileStream::removeBlock(ulong start, ulong length)
 {
   if(!isOpen()) {
     debug("FileStream::removeBlock() -- invalid file.");
-    return;
+    return false;
   }
 
   ulong bufferLength = bufferSize();
@@ -320,12 +342,18 @@ void FileStream::removeBlock(ulong start, ulong length)
     }
 
     seek(writePosition);
-    writeFile(d->file, buffer);
-
+    size_t nbBytes = writeFile(d->file, buffer);
+	if (nbBytes != buffer.size()) {
+	  debug("FileStream::writeBlock() error, 0 bytes written.");
+	  return false;
+	}
+	
     writePosition += bytesRead;
   }
 
   truncate(writePosition);
+  
+  return true;
 }
 
 bool FileStream::readOnly() const
